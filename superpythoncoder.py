@@ -59,14 +59,20 @@ def gen_code(user_input):
     # Adjust the following line based on the actual structure of the ChatCompletion object
     generated_code = chat_completion.choices[0].message.content
 
-    with open('userCode.py', 'w') as file:
-        file.write(generated_code)
+    # Get the directory of the current script
+    current_dir = os.path.dirname(os.path.abspath(__file__))
 
+    # Construct the path for the new file
+    file_path = os.path.join(current_dir, 'userCode.py')
+
+    # Write the generated code to the file
+    with open(file_path, 'w') as file:
+        file.write(generated_code)
 
 if __name__ == '__main__':
     user_input = get_user_task()
     print(user_input)
     gen_code(user_input)
-    subprocess.run(["python", "userCode.py"])
-
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'userCode.py')
+    subprocess.run(["python", file_path])
     
