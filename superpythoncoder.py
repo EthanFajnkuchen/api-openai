@@ -43,7 +43,7 @@ def get_user_task():
 
 def gen_code(user_input, client):
     # Initialize the OpenAI client
-    prompt = "Python code only :" + user_input + " Do not write any explanation, comments, introduction or any other text besides the python code. Also please include unit tests that check the logic of the program using 5 different inputs and expected outputs.Please print to the console the results of the unit tests. Once again, do not write any explanations, comments or introduction to this task too. "
+    prompt = "Python code only :" + user_input + " Do not write any explanation, comments, introduction or any other text besides the python code. Also please include complex unit tests using asserts method that check the logic of the program using 5 different inputs and expected outputs.Please print to the console the results of the unit tests. Once again, do not write any explanations, comments or introduction to this task too. "
            
 
     # Get the chat completion
@@ -102,7 +102,7 @@ def run_and_fix_code(file_path, client, attempts=5):
                 if attempt == attempts - 1:
                     pbar.update(100) 
 
-        print("Code generation FAILED")
+        print(Fore.RED + " Code generation FAILED")
 
 
 
