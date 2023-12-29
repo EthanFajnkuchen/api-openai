@@ -3,6 +3,11 @@ from dotenv import load_dotenv
 import os
 import subprocess  # Import subprocess module
 import random   
+from colorama import Fore, Style, init
+from tqdm import tqdm
+
+init(autoreset=True)
+
 
 # Load the API key from the .env file
 load_dotenv()
@@ -67,33 +72,38 @@ def gen_code(user_input, client):
         file.write(generated_code)
 
 def run_and_fix_code(file_path, client, attempts=5):
-    for attempt in range(attempts):
-        try:
-            result = subprocess.run(["python", file_path],check=True, capture_output=True, text=True)
-            print('Code creation completed successfully')
-            subprocess.call(["start", file_path]) #This line does not work, it seems that the file does not exists.
-            #os.startfile(file_path) #This line seems to open the file using the default app to open python code
+    with tqdm(total=100, desc="Running and fixing code") as pbar:
+        for attempt in range(attempts):
+            try:
+                result = subprocess.run(["python", file_path],check=True, capture_output=True, text=True)
+                print(Fore.GREEN + ' Code creation completed successfully')
+                pbar.update(100)  # Update progress bar to 100%
 
-            return
-        except subprocess.CalledProcessError as e:
-            print(f"Error running generated code! Error: {e.stderr}")
-            error_message = f"There was an error in the generated code: {e.stderr}. Please fix the code. Once again, i want python only! Do not write any explanations, comments or introcution. Just write a new code with the fixed error!"
-            chat_completion = client.chat.completions.create(
-                messages=[
-                    {
-                        "role": "user",
-                        "content": error_message
-                    }
-                ],
-                model="gpt-3.5-turbo",
-            )
-            fixed_code = chat_completion.choices[0].message.content
-            with open(file_path, 'w') as file:
-                file.write(fixed_code)
+                #subprocess.call(["open", file_path]) #This line does not work, it seems that the file does not exists.
+                os.startfile(file_path) #This line seems to open the file using the default app to open python code
+                return
+            except subprocess.CalledProcessError as e:
+                print(Fore.RED + f" Error running generated code! Error: {e.stderr}")
+                pbar.update(100 / attempts)  # Update progress for each attempt
+                error_message = f"There was an error in the generated code: {e.stderr}. Please fix the code. Once again, i want python only! Do not write any explanations, comments or introcution. Just write a new code with the fixed error!"
+                chat_completion = client.chat.completions.create(
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": error_message
+                        }
+                    ],
+                    model="gpt-3.5-turbo",
+                )
+                fixed_code = chat_completion.choices[0].message.content
+                with open(file_path, 'w') as file:
+                    file.write(fixed_code)
 
-    print("Code generation FAILED")
-    with open(file_path, 'w') as file:
-        file.write("")
+                if attempt == attempts - 1:
+                    pbar.update(100) 
+
+        print("Code generation FAILED")
+
 
 
 
