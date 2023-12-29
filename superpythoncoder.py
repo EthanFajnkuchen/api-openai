@@ -29,11 +29,13 @@ PROGRAMS_LIST = [
         ACB
         CAB "''',
         "A program that checks if a number is a palindrome",
-        "A program that finds the kth smallest element in a given binary search tree."
+        "A program that finds the kth smallest element in a given binary search tree.",
+        '''Develop a Python program that finds all the prime factors of a given number using an optimized algorithm. The program should take an integer as input and return a list of its prime factors. To make it more efficient, use the Sieve of Eratosthenes for finding prime numbers and then apply these primes to factorize the given number.''',
+        "Write a Python program that merges two sorted linked lists into a single sorted linked list. The program should define a linked list structure, take two linked lists as input, and then combine them while maintaining the sorted order. The final output should be the merged sorted linked list."
     ]
 
 def get_user_task(): 
-    user_input = input("Tell me, which program would you like me to code for you? If you don't have an idea,just press enter and I will choose a random program to code: ")
+    user_input = input("Tell me, which program would you like me to code for you? If you don't have an idea,just press enter and I will choose a random program to code: \n")
     if user_input.strip() == "":
         return random.choice(PROGRAMS_LIST)
     else :

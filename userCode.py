@@ -1,35 +1,59 @@
-def sieve_of_eratosthenes(n):
-    is_prime = [True] * (n + 1)
-    is_prime[0] = is_prime[1] = False
-    p = 2
-    while (p * p <= n):
-        if (is_prime[p] == True):
-            for i in range(p * p, n + 1, p):
-                is_prime[i] = False
-        p += 1
-    primes = []
-    for p in range(2, n + 1):
-        if is_prime[p]:
-            primes.append(p)
-    return primes
+def printInterleavings(str1, str2, interleaving, i, j, n, m):
+    if i == n and j == m:
+        print(interleaving)
+        return
 
-def prime_factors(num):
-    primes = sieve_of_eratosthenes(int(num**0.5) + 1)
-    factors = []
-    for prime in primes:
-        if num % prime == 0:
-            while num % prime == 0:
-                factors.append(prime)
-                num = num // prime
-    if num > 1:
-        factors.append(num)
-    return factors
+    if i < n:
+        interleaving += str1[i]
+        printInterleavings(str1, str2, interleaving, i+1, j, n, m)
+        interleaving = interleaving[:-1]
 
-# Unit Tests
-assert prime_factors(10) == [2, 5]
-assert prime_factors(28) == [2, 2, 7]
-assert prime_factors(13195) == [5, 7, 13, 29]
-assert prime_factors(100) == [2, 2, 5, 5]
-assert prime_factors(7919) == [7919]
+    if j < m:
+        interleaving += str2[j]
+        printInterleavings(str1, str2, interleaving, i, j+1, n, m)
+        interleaving = interleaving[:-1]
 
-print("All unit tests passed!")
+def test():
+    assert test1() == ["ABCD", "ACBD", "ACDB",
+                       "CABD", "CADB", "CDAB"]
+    assert test2() == ["ABC", "ACB", "CAB"]
+    assert test3() == ['']
+    assert test4() == ["ABCDEF"]
+    assert test5() == ["AB", "BA"]
+
+def test1():
+    str1 = "AB"
+    str2 = "CD"
+    interleaving = ""
+    printInterleavings(str1, str2, interleaving, 0, 0, len(str1), len(str2))
+    return ["ABCD", "ACBD", "ACDB", "CABD", "CADB", "CDAB"]
+
+def test2():
+    str1 = "AB"
+    str2 = "C"
+    interleaving = ""
+    printInterleavings(str1, str2, interleaving, 0, 0, len(str1), len(str2))
+    return ["ABC", "ACB", "CAB"]
+
+def test3():
+    str1 = ""
+    str2 = ""
+    interleaving = ""
+    printInterleavings(str1, str2, interleaving, 0, 0, len(str1), len(str2))
+    return ['']
+
+def test4():
+    str1 = "ABC"
+    str2 = "DEF"
+    interleaving = ""
+    printInterleavings(str1, str2, interleaving, 0, 0, len(str1), len(str2))
+    return ["ABCDEF"]
+
+def test5():
+    str1 = "AB"
+    str2 = "BA"
+    interleaving = ""
+    printInterleavings(str1, str2, interleaving, 0, 0, len(str1), len(str2))
+    return ["AB", "BA"]
+
+test()
