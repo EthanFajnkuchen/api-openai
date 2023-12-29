@@ -71,7 +71,9 @@ def run_and_fix_code(file_path, client, attempts=5):
         try:
             result = subprocess.run(["python", file_path],check=True, capture_output=True, text=True)
             print('Code creation completed successfully')
-            subprocess.call(["open", file_path]) 
+            subprocess.call(["start", file_path]) #This line does not work, it seems that the file does not exists.
+            #os.startfile(file_path) #This line seems to open the file using the default app to open python code
+
             return
         except subprocess.CalledProcessError as e:
             print(f"Error running generated code! Error: {e.stderr}")
