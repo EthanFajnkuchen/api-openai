@@ -36,13 +36,10 @@ def get_user_task():
         
     
 
-def gen_code(user_input):
+def gen_code(user_input, client):
     # Initialize the OpenAI client
     prompt = "Python code only :" + user_input + " Do not write any explanation, comments, introduction or any other text besides the python code. Also please include unit tests that check the logic of the program using 5 different inputs and expected outputs.Please print to the console the results of the unit tests. Once again, do not write any explanations, comments or introduction to this task too. "
            
-    client = OpenAI(
-        api_key=os.getenv('OPENAI_API_KEY')
-    )
 
     # Get the chat completion
     chat_completion = client.chat.completions.create(
@@ -69,10 +66,41 @@ def gen_code(user_input):
     with open(file_path, 'w') as file:
         file.write(generated_code)
 
+def run_and_fix_code(file_path, client, attempts=5):
+    for attempt in range(attempts):
+        try:
+            result = subprocess.run(["python", file_path],check=True, capture_output=True, text=True)
+            print('Code creation completed successfully')
+            subprocess.call(["open", file_path]) 
+            return
+        except subprocess.CalledProcessError as e:
+            print(f"Error running generated code! Error: {e.stderr}")
+            error_message = f"There was an error in the generated code: {e.stderr}. Please fix the code. Once again, i want python only! Do not write any explanations, comments or introcution. Just write a new code with the fixed error!"
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": error_message
+                    }
+                ],
+                model="gpt-3.5-turbo",
+            )
+            fixed_code = chat_completion.choices[0].message.content
+            with open(file_path, 'w') as file:
+                file.write(fixed_code)
+
+    print("Code generation FAILED")
+    with open(file_path, 'w') as file:
+        file.write("")
+
+
+
 if __name__ == '__main__':
+
+    client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
     user_input = get_user_task()
-    print(user_input)
-    gen_code(user_input)
+    gen_code(user_input,client)
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'userCode.py')
-    subprocess.run(["python", file_path])
+    run_and_fix_code(file_path, client)
+    
     
