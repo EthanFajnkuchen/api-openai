@@ -83,7 +83,7 @@ def run_and_fix_code(file_path, client, attempts=5):
                 
                 print(file_path)
                 cmd = f'start "" "{file_path}" ' 
-                subprocess.call(cmd,shell=True) #This line works because of formatting to Windows style! Cannot work on MACOS or LINUX
+                subprocess.call(cmd,shell=True) #This line works because of formatting to Windows style in previous line! Cannot work on MACOS or LINUX
                 #os.startfile(file_path) #This line seems to open the file using the default app to open python code
                 return
             except subprocess.CalledProcessError as e:
