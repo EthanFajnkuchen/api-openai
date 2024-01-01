@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 import subprocess  # Import subprocess module
 import random   
-from colorama import Fore, Style, init
+from colorama import Fore, init
 from tqdm import tqdm
 
 init(autoreset=True)
@@ -80,9 +80,11 @@ def run_and_fix_code(file_path, client, attempts=5):
                 result = subprocess.run(["python", file_path],check=True, capture_output=True, text=True)
                 print(Fore.GREEN + ' Code creation completed successfully')
                 pbar.update(100)  # Update progress bar to 100%
-
-                #subprocess.call(["open", file_path]) #This line does not work, it seems that the file does not exists.
-                os.startfile(file_path) #This line seems to open the file using the default app to open python code
+                
+                print(file_path)
+                cmd = f'start "" "{file_path}" ' 
+                subprocess.call(cmd,shell=True) #This line works because of formatting to Windows style! Cannot work on MACOS or LINUX
+                #os.startfile(file_path) #This line seems to open the file using the default app to open python code
                 return
             except subprocess.CalledProcessError as e:
                 print(Fore.RED + f" Error running generated code! Error: {e.stderr}")
@@ -110,7 +112,6 @@ def run_and_fix_code(file_path, client, attempts=5):
 
 
 if __name__ == '__main__':
-
     client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
     user_input = get_user_task()
     gen_code(user_input,client)
