@@ -80,16 +80,14 @@ def run_and_fix_code(file_path, client, attempts=5):
                 result = subprocess.run(["python", file_path],check=True, capture_output=True, text=True)
                 print(Fore.GREEN + ' Code creation completed successfully')
                 pbar.update(100)  # Update progress bar to 100%
-                
-                print(file_path)
                 cmd = f'start "" "{file_path}" ' 
                 subprocess.call(cmd,shell=True) #This line works because of formatting to Windows style in previous line! Cannot work on MACOS or LINUX
                 #os.startfile(file_path) #This line seems to open the file using the default app to open python code
                 return
             except subprocess.CalledProcessError as e:
-                print(Fore.RED + f" Error running generated code! Error: {e.stderr}")
+                print(Fore.YELLOW + f" Error running generated code! Error: {e.stderr}")
                 pbar.update(100 / attempts)  # Update progress for each attempt
-                error_message = f"There was an error in the generated code: {e.stderr}. Please fix the code. Once again, i want python only! Do not write any explanations, comments or introcution. Just write a new code with the fixed error!"
+                error_message = f"There was an error in the generated code: {e.stderr}. Please fix the error without changing the purpose of the program. Once again, i want python only! Do not write any explanations, comments or introdution. Just write a new code, keeping the five unit tests that you wrote before, with the fixed error!"
                 chat_completion = client.chat.completions.create(
                     messages=[
                         {
@@ -109,13 +107,10 @@ def run_and_fix_code(file_path, client, attempts=5):
         print(Fore.RED + " Code generation FAILED")
 
 
-
-
 if __name__ == '__main__':
     client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
     user_input = get_user_task()
     gen_code(user_input,client)
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'userCode.py')
     run_and_fix_code(file_path, client)
-    
     
