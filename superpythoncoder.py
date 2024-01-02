@@ -1,7 +1,7 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
-import subprocess  # Import subprocess module
+import subprocess
 import random   
 from colorama import Fore, init
 from tqdm import tqdm
