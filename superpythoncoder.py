@@ -49,13 +49,12 @@ def gen_code(user_input, client):
            
 
     # Get the chat completion
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
+    chat_msgs = [ {
                 "role": "user",
                 "content": prompt
-            }
-        ],
+            }]
+    chat_completion = client.chat.completions.create(
+        messages=chat_msgs,
         model="gpt-3.5-turbo",
     )
 
@@ -63,6 +62,10 @@ def gen_code(user_input, client):
     # Adjust the following line based on the actual structure of the ChatCompletion object
     generated_code = chat_completion.choices[0].message.content
 
+    chat_msgs.append({
+        "role": "assistant",
+        "content": generated_code
+    })
     # Get the directory of the current script
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -72,8 +75,10 @@ def gen_code(user_input, client):
     # Write the generated code to the file
     with open(file_path, 'w') as file:
         file.write(generated_code)
+    
+    return chat_msgs
 
-def run_and_fix_code(file_path, client, attempts=5):
+def run_and_fix_code(file_path, client, msgs=None, attempts=5):
     with tqdm(total=100, desc="Running and fixing code") as pbar:
         for attempt in range(attempts):
             try:
@@ -88,16 +93,23 @@ def run_and_fix_code(file_path, client, attempts=5):
                 print(Fore.YELLOW + f" Error running generated code! Error: {e.stderr}")
                 pbar.update(100 / attempts)  # Update progress for each attempt
                 error_message = f"There was an error in the generated code: {e.stderr}. Please fix the error without changing the purpose of the program. Once again, i want python only! Do not write any explanations, comments or introdution. Just write a new code, keeping the five unit tests that you wrote before, with the fixed error!"
-                chat_completion = client.chat.completions.create(
-                    messages=[
+                chat_msgs = (msgs or []) + [
                         {
                             "role": "user",
                             "content": error_message
                         }
-                    ],
+                        ]
+                
+                chat_completion = client.chat.completions.create(
+                    messages=chat_msgs,
                     model="gpt-3.5-turbo",
                 )
                 fixed_code = chat_completion.choices[0].message.content
+                chat_msgs.append({
+                    "role": "assistant",
+                    "content": fixed_code
+                })
+                
                 with open(file_path, 'w') as file:
                     file.write(fixed_code)
 
@@ -110,7 +122,7 @@ def run_and_fix_code(file_path, client, attempts=5):
 if __name__ == '__main__':
     client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
     user_input = get_user_task()
-    gen_code(user_input,client)
+    msgs = gen_code(user_input,client)
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'userCode.py')
-    run_and_fix_code(file_path, client)
+    run_and_fix_code(file_path, client, msgs)
     

@@ -1,21 +1,50 @@
-def candy(ratings):
-    if not ratings:
-        return 0
-    n = len(ratings)
-    candies = [1] * n
-    for i in range(1, n):
-        if ratings[i] > ratings[i-1]:
-            candies[i] = candies[i-1] + 1
-    for i in range(n-2, -1, -1):
-        if ratings[i] > ratings[i+1]:
-            candies[i] = max(candies[i], candies[i+1] + 1)
-    return sum(candies)
+class Wallet:
+    def __init__(self):
+        self.balance = 0
 
-# Unit tests
-assert candy([1, 2, 3, 4, 5]) == 15
-assert candy([5, 4, 3, 2, 1]) == 15
-assert candy([1, 3, 2, 4, 5]) == 9
-assert candy([1, 2, 2, 2, 1]) == 7
-assert candy([1, 2, 3, 2, 1]) == 9
+    def withdraw(self, amount):
+        if amount <= self.balance:
+            self.balance -= amount
+        else:
+            print("Insufficient funds")
 
-print("All unit tests pass")
+    def add_money(self, amount):
+        self.balance += amount
+
+
+wallet = Wallet()
+wallet.add_money(100)
+wallet.add_money(50)
+wallet.withdraw(60)
+wallet.withdraw(40)
+wallet.withdraw(60)
+
+assert wallet.balance == 50
+
+wallet2 = Wallet()
+wallet2.withdraw(10)
+
+assert wallet2.balance == 0
+
+wallet3 = Wallet()
+wallet3.add_money(1000)
+wallet3.withdraw(500)
+wallet3.add_money(200)
+wallet3.add_money(300)
+
+assert wallet3.balance == 1000
+
+wallet4 = Wallet()
+wallet4.add_money(500)
+wallet4.withdraw(600)
+
+assert wallet4.balance == 500
+
+wallet5 = Wallet()
+wallet5.add_money(100)
+wallet5.withdraw(50)
+wallet5.withdraw(25)
+
+assert wallet5.balance == 25
+
+print("All tests passed!")
