@@ -1,35 +1,10 @@
-class Wallet:
-    def __init__(self):
-        self.balance = 0
+def count_common_chars(s1, s2):
+    return len(set(s1) & set(s2))
 
-    def add_money(self, amount):
-        self.balance += amount
+assert count_common_chars("abcdef", "defghi") == 3
+assert count_common_chars("abc", "def") == 0
+assert count_common_chars("hello", "world") == 1
+assert count_common_chars("python", "code") == 2
+assert count_common_chars("12345", "54321") == 5
 
-    def withdraw(self, amount):
-        if amount <= self.balance:
-            self.balance -= amount
-        else:
-            print("Insufficient balance")
-
-    def delete_wallet(self):
-        self.balance = 0
-
-# Unit tests
-wallet = Wallet()
-wallet.add_money(100)
-assert wallet.balance == 100
-
-wallet.withdraw(50)
-assert wallet.balance == 50
-
-wallet.add_money(200)
-assert wallet.balance == 250
-
-wallet.delete_wallet()
-assert wallet.balance == 0
-
-wallet.add_money(500)
-wallet.withdraw(600)
-assert wallet.balance == 500
-
-print("All unit tests passed")
+print("All unit tests pass")
