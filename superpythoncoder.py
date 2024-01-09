@@ -86,11 +86,10 @@ def run_and_fix_code(file_path, client, msgs=None, attempts=5):
                 print(Fore.GREEN + ' Code creation completed successfully')
                 pbar.update(100)  # Update progress bar to 100%
                 subprocess.call(["open", file_path])
-                #os.startfile(file_path) #This line seems to open the file using the default app to open python code
                 return
             except subprocess.CalledProcessError as e:
                 print(Fore.YELLOW + f" Error running generated code! Error: {e.stderr}")
-                pbar.update(100 / attempts)  # Update progress for each attempt
+                pbar.update(100 / attempts)  
                 error_message = f"There was an error in the generated code: {e.stderr}. Please fix the error without changing the purpose of the program. Once again, i want python only! Do not write any explanations, comments or introdution. Just write a new code, keeping the five unit tests that you wrote before once again using assert statement, with the fixed error!"
                 chat_msgs = (msgs or []) + [
                         {
