@@ -85,7 +85,7 @@ def run_and_fix_code(file_path, client, msgs=None, attempts=5):
                 result = subprocess.run(["python", file_path],check=True, capture_output=True, text=True)
                 print(Fore.GREEN + ' Code creation completed successfully')
                 pbar.update(100)  # Update progress bar to 100%
-                cmd = f'start "" "{file_path}" ' 
+                cmd = f'open "" "{file_path}" ' 
                 subprocess.call(cmd,shell=True) #This line works because of formatting to Windows style in previous line! Cannot work on MACOS or LINUX
                 #os.startfile(file_path) #This line seems to open the file using the default app to open python code
                 return
